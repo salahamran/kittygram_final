@@ -35,7 +35,7 @@ services:
     build: ./nginx
     image: salahamran/kittygram_gateway
     ports:
-      - "80:80"
+      - "8081:80"
       - "443:443"
     depends_on:
       - backend
