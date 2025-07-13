@@ -11,7 +11,7 @@ services:
   backend:
     build:
       context: ./backend
-    image: salahamran/kittygram_backend
+    # OR use the image if already pushed: image: salahamran/kittygram_backend
     depends_on:
       - db
     volumes:
@@ -20,29 +20,29 @@ services:
     env_file:
       - .env
     restart: always
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"  # Internal only (used by gateway)
 
   frontend:
     build:
       context: ./frontend
-    image: salahamran/kittygram_frontend
+    # OR use the image if already pushed: image: salahamran/kittygram_frontend
     volumes:
       - static:/app/frontend_static/
     restart: always
 
   gateway:
     build: ./nginx
-    image: salahamran/kittygram_gateway
-    ports:
-      - "8081:80"
-      - "443:443"
+    # OR use the image if already pushed: image: salahamran/kittygram_gateway
     depends_on:
       - backend
       - frontend
     volumes:
       - static:/static/
       - media:/media/
+    ports:
+      - "9001:80"   # Changed to avoid conflict with Taski (which uses 8000:80)
+      - "4431:443"  # Optional, if you want SSL for Kittygram separately
     restart: always
 
 volumes:
