@@ -4,15 +4,12 @@ FROM python:3.11-slim
 WORKDIR /app
 
 
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install gunicorn==20.1.0
 
-# Make sure gunicorn is included
-# If not, add it manually:
-RUN pip install gunicorn
+COPY  requirements.txt .
 
-# Copy project
+RUN pip install -r requirements.txt --no-cache-dir
+
 COPY . .
 
 # Set default command
