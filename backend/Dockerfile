@@ -1,15 +1,15 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
 
+# Set workdir
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-RUN apt-get update && apt-get install -y gcc libpq-dev && apt-get clean
-
+RUN pip install gunicorn==20.1.0
+# Install dependencies
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy project
 COPY . .
 
+# Set default command
 CMD ["gunicorn", "kittygram_backend.wsgi:application", "--bind", "0.0.0.0:8000"]
