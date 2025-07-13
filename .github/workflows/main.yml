@@ -71,7 +71,7 @@ jobs:
       - name: Push gateway image
         uses: docker/build-push-action@v4
         with:
-          context: ./gateway/
+          context: ./nginx/
           push: true
           tags: salahamran/kittygram_gateway:latest
 
