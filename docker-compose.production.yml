@@ -1,51 +1,38 @@
 version: '3.8'
+volumes:
+  static:
+  media:
+  pg_data:
 
 services:
   db:
     image: postgres:13
     volumes:
       - pg_data:/var/lib/postgresql/data/
-    env_file:
-      - .env
 
   backend:
-    build:
-      context: ./backend
-    # OR use the image if already pushed: image: salahamran/kittygram_backend
+    image: salahamran/kittygram_final-backend
+    env_file: .env
+    volumes:
+      - static:/backend_static/
+      - media:/var/www/kittygram/media
     depends_on:
       - db
-    volumes:
-      - static:/app/backend_static/
-      - media:/app/media/
-    env_file:
-      - .env
-    restart: always
-    expose:
-      - "8080"  # Internal only (used by gateway)
 
   frontend:
-    build:
-      context: ./frontend
-    # OR use the image if already pushed: image: salahamran/kittygram_frontend
+    image: salahamran/kittygram_final-frontend
+    env_file: .env
+    command: cp -r /app/build/. /static/
     volumes:
-      - static:/app/frontend_static/
-    restart: always
-
+      - static:/static
   gateway:
-    build: ./nginx
-    # OR use the image if already pushed: image: salahamran/kittygram_gateway
+    image: salahamran/kittygram_final-gateway
+    env_file: .env
+    ports:
+      -9000:80
+    volumes:
+      - static:/staticfiles/
     depends_on:
       - backend
       - frontend
-    volumes:
-      - static:/static/
-      - media:/media/
-    ports:
-      - "9001:80"   # Changed to avoid conflict with Taski (which uses 8000:80)
-      - "4431:443"  # Optional, if you want SSL for Kittygram separately
-    restart: always
 
-volumes:
-  static:
-  media:
-  pg_data:
