@@ -24,7 +24,7 @@ services:
     env_file: .env
     command: cp -r /app/build/. /static/
     volumes:
-      - static:/staticfiles
+      - static:/static/
   gateway:
     image: salahamran/kittygram_gateway
     env_file: .env
