@@ -71,7 +71,7 @@ jobs:
       - name: Push gateway image
         uses: docker/build-push-action@v4
         with:
-          context: ./gateway/
+          context: ./nginx/
           push: true
           tags: salahamran/kittygram_gateway:latest
 
@@ -88,7 +88,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           source: "docker-compose.production.yml"
-          target: "kittygram"
+          target: "~/kittygram"
       - name: Deploy to production server
         uses: appleboy/ssh-action@master
         with:
@@ -102,8 +102,10 @@ jobs:
             sudo docker compose -f docker-compose.production.yml down
             sudo docker compose -f docker-compose.production.yml up -d
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
-            sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
+            sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --noinput --clear
+            sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /staticfiles/
             sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
+
 
   notify:
     runs-on: ubuntu-latest
